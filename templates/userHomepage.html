@@ -1,0 +1,109 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/StyleSheet.css' %}">
+    <title>{{ user.username }}'s Homepage</title>
+    <!-- Chart.js script-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Collectors Edition</div>
+        <ul class="nav-links">
+            <li><a href="{% url 'logout' %}" class="logout-button">Logout</a></li>
+        </ul>
+    </nav>
+
+    <section class="user-dashboard">
+        <h1>Welcome, {{ user.username }}!</h1>
+        <p>Discover, organize, and grow your collection!</p>
+        <br />
+        <p>Total items in collections: {{ total_items }} item{{ total_items|pluralize }}</p>
+        <a href="{% url 'create_collection' %}" class="btn-start-building">Start Building</a>
+    </section>
+
+    <section class="collections-container">
+        <div class="collection-grid">
+            {% for collection in collections %}
+            <a href="{% url 'collection_detail' collection.id %}" class="collection-link">
+                <div class="collection-item">
+                    <div class="text-content">
+                        <h3>{{ collection.name }}</h3>
+                    </div>
+                    {% with first_item_image=collection.items.first.image %}
+                    {% if first_item_image %}
+                    <img src="{{ first_item_image.url }}"
+                         alt="{{ collection.name }} image"
+                         onerror="this.onerror=null; this.src='{% static 'images/placeholder.png' %}';">
+                    {% else %}
+                    <img src="{% static 'images/noimage4.png' %}" alt="No image available">
+                    {% endif %}
+                    {% endwith %}
+                    <div class="item-count">
+                        <p>{{ collection.items.count }} item{{ collection.items.count|pluralize }}</p>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <p>No collections found.</p>
+            {% endfor %}
+
+            <!-- Create new collection box -->
+            <a href="{% url 'create_collection' %}" class="collection-link">
+                <div class="collection-item create-box">
+
+                    <div class="plus-sign">+</div>
+                    <h3>Create New Collection</h3>
+                    <div class="item-count"><p>&nbsp;</p></div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Overall Price Comparison Chart Container-->
+    <div class="chart-container">
+        <h3 class="chart-title">Overall Price Comparison (Purchased vs. Retail)</h3>
+        <canvas id="overallPriceChart" width="400" height="200"></canvas>
+    </div>
+
+    
+
+    <!-- Script to display chart-->
+    <script>
+    const ctx = document.getElementById('overallPriceChart').getContext('2d');
+    const overallPriceChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Purchased Price', 'Retail Price'],
+            datasets: [{
+                label: 'Total Price Comparison',
+                data: [{{ total_purchased_price|floatformat:2 }}, {{ total_retail_price|floatformat:2 }}],
+                backgroundColor: ['#28a745', '#007bff'],
+                borderColor: ['#28a745', '#007bff'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return '$' + tooltipItem.raw.toFixed(2);
+                        }
+                    }
+                }
+            }
+        }
+    });
+    </script>
+
+</body>
+</html>

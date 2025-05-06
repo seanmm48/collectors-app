@@ -1,0 +1,56 @@
+﻿
+<!-- loading static files-->
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collectors Edition</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/StyleSheet.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">Collectors Edition</div>
+        <ul class="nav-links">
+            <li><a href="{% url 'login' %}">Login</a></li>
+            <li><a href="{% url 'signup' %}">Sign Up</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <h1>Organize Your Collections Effortlessly</h1>
+        <p>Track and manage all your collections in one place. Start organizing today!</p>
+        <button class="cta" onclick="window.location.href='{% url 'signup' %}'">Sign Up</button>
+
+    </header>
+
+
+    <!-- Search Bar
+     <section class="search-section">
+         <input type="text" placeholder="Search collections..." name ="search_bar">
+         <button>Search</button>
+     </section>
+
+
+     <section class="collections">
+         <h2>Popular Collections</h2>
+         <div class="collection-grid">
+             <div class="collection-item">Collection 1</div>
+             <div class="collection-item">Collection 2</div>
+             <div class="collection-item">Collection 3</div>
+             <div class="collection-item">Collection 4</div>
+         </div>
+     </section>
+    -->
+    <footer>
+        <p>&copy; 2025 Collection Tracker</p>
+    </footer>
+
+</body>
+
+
+</html>

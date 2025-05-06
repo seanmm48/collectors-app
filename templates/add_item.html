@@ -1,0 +1,39 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/StyleSheet.css' %}">
+    <title>Add Item to {{ collection.name }}</title>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Collectors Edition</div>
+        <ul class="nav-links">
+            <li><a href="{% url 'userHomepage' %}">Homepage</a></li>
+            <li><a href="{% url 'logout' %}" class="logout-button">Logout</a></li>
+        </ul>
+    </nav>
+
+    <section class="add-item">
+        <!-- Main Collection Name at the Top, NOT BEING PASSED? -->
+        <br />
+        <h1 class="collection-name">{{ collection.name }} </h1>
+
+        <br />
+
+        <h2>Add Item to Collection </h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+
+            <button type="submit">Add Item</button>
+        </form>
+    </section>
+</body>
+</html>

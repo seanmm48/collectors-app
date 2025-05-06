@@ -1,0 +1,125 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/StyleSheet.css' %}">
+    <title>Create a Collection</title>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Collectors Edition</div>
+        <ul class="nav-links">
+            <li class="dropdown">
+                <a href="#" class="dropbtn">{{ user.username }}</a>
+                <div class="dropdown-content">
+                    <a href="{% url 'userHomepage' %}">Homepage</a>
+                </div>
+            </li>
+            <li><a href="{% url 'logout' %}" class="logout-button">Logout</a></li>
+        </ul>
+    </nav>
+
+    <section class="create-collection">
+        <h1>Create Your Collection</h1>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Display errors for collection form -->
+            {% if collection_form.errors %}
+            <ul>
+                {% for field in collection_form %}
+                {% for error in field.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <!-- Collection Form -->
+            <h2>Collection Details</h2>
+            <div class="form-group">
+                <label for="{{ collection_form.name.id_for_label }}">Collection Name</label>
+                {{ collection_form.name }}  <!-- Collection name -->
+
+                <label for="{{ collection_form.theme.id_for_label }}">Collection Theme</label>
+                {{ collection_form.theme }}  <!-- Collection theme -->
+
+                <label for="{{ collection_form.description.id_for_label }}">Collection Description</label>
+                {{ collection_form.description }}  <!-- Collection description -->
+            </div>
+
+            <!-- Display errors for item form -->
+            {% if item_form.errors %}
+            <ul>
+                {% for field in item_form %}
+                {% for error in field.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <!-- Item Form -->
+            <h2>First Item</h2>
+            <div class="form-group">
+                <label for="{{ item_form.name.id_for_label }}">Item Name</label>
+                {{ item_form.name }}  <!-- Item name -->
+
+                <label for="{{ item_form.theme.id_for_label }}">Item Theme</label>
+                {{ item_form.theme }}  <!-- Item theme -->
+
+                <label for="{{ item_form.description.id_for_label }}">Item Description</label>
+                {{ item_form.description }}  <!-- Item description -->
+            </div>
+
+            <div class="form-group">
+                <label for="{{ item_form.purchased_price.id_for_label }}">Purchased Price</label>
+                {{ item_form.purchased_price }}  <!-- Purchased Price -->
+            </div>
+
+            <div class="form-group">
+                <label for="{{ item_form.retail_price.id_for_label }}">Retail Price</label>
+                {{ item_form.retail_price }}  <!-- Retail Price -->
+            </div>
+
+            <div class="form-group">
+                <label for="{{ item_form.date_purchased.id_for_label }}">Date Purchased</label>
+                {{ item_form.date_purchased }}  <!-- Date Purchased -->
+            </div>
+
+            <div class="form-group">
+                <label for="{{ item_form.image.id_for_label }}">Upload Item Image</label>
+                {{ item_form.image }}  <!-- Item image -->
+            </div>
+
+            <!-- Image Preview -->
+            <div id="image-preview-container" class="image-preview-container" style="display:none;">
+                <p>Image Preview:</p>
+                <img id="image-preview" src="#" alt="Preview">
+            </div>
+
+            <button type="submit" style="margin-top: 20px">Create Collection and Add Item</button>
+        </form>
+    </section>
+
+    <script>
+        // Function to preview the image
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('image-preview');
+                output.src = reader.result;
+                document.getElementById('image-preview-container').style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        // Attach the previewImage function to the file input field
+        document.querySelector('input[type="file"]').addEventListener('change', previewImage);
+    </script>
+
+</body>
+</html>

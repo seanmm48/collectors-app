@@ -1,0 +1,93 @@
+﻿{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Collectors Edition</title>
+    <link rel="stylesheet" href="{% static 'css/StyleSheet.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">Collectors Edition</div>
+        <ul class="nav-links">
+            <li><a href="{% url 'homepage' %}">Home</a></li>
+            <li><a href="{% url 'login' %}">Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- Sign Up Form Section -->
+    <section class="sign-up-form">
+        <form id="signup-form" action="{% url 'signup' %}" method="POST">
+            {% csrf_token %}
+            <h2>Sign Up for Collectors Edition</h2>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required autocomplete="username">
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required autocomplete="email">
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required autocomplete="new-password">
+
+            <label for="confirm_password">Confirm Password:</label>
+            <input type="password" id="confirm_password" name="confirm_password" required autocomplete="new-password">
+
+            <button type="submit">Sign Up</button>
+
+            <p class="link">Already have an account? <a href="{% url 'login' %}"> Log in here</a></p>
+
+            <!-- Error message container -->
+            <div id="error-message"></div>
+        </form>
+    </section>
+
+    <!-- JavaScript for Handling Form Submission -->
+    <script>
+        document.getElementById("signup-form").addEventListener("submit", async function (event) {
+            event.preventDefault();  // Prevent form from reloading
+
+            let formData = new FormData(this);
+            let errorContainer = document.getElementById("error-message");
+            errorContainer.innerHTML = ""; // Clear previous messages
+
+            try {
+                let response = await fetch("{% url 'signup' %}", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "X-Requested-With": "XMLHttpRequest"  // Mark as AJAX request
+                    }
+                });
+
+                let contentType = response.headers.get("content-type");
+
+                if (contentType && contentType.includes("application/json")) {
+                    let data = await response.json();
+                    if (data.success) {
+                        window.location.href = data.redirect_url;  // Redirect to login page
+                    } else {
+                        errorContainer.innerHTML = `<p class='popup'>${data.error}</p>`;
+                        errorContainer.style.display = "block";
+                    }
+                } else {
+                    console.error("Unexpected response format, likely an error page.");
+                    errorContainer.innerHTML = `<p class='popup'>Unexpected error. Check console for details.</p>`;
+                }
+
+            } catch (error) {
+                console.error("Error:", error);
+                errorContainer.innerHTML = `<p class='popup'>An error occurred. Please try again.</p>`;
+            }
+        });
+    </script>
+
+    <footer>
+        <p>&copy; 2025 Collectors Edition</p>
+    </footer>
+
+</body>
+</html>

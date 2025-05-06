@@ -1,0 +1,72 @@
+﻿{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Collectors Edition</title>
+    <link rel="stylesheet" href="{% static 'css/StyleSheet.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">Collectors Edition</div>
+        <ul class="nav-links">
+            <li><a href="{% url 'homepage' %}">Home</a></li>
+            <li><a href="{% url 'signup' %}">Sign Up</a></li>
+        </ul>
+    </nav>
+
+    <!-- Login Form Section -->
+    <section class="login-form">
+        <form action="{% url 'login' %}" method="POST">
+            {% csrf_token %} <!-- Token needed for security -->
+            <h2>Login</h2>
+
+            <!-- Username input -->
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+
+            <!-- Password input -->
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+            <!-- Submit Button -->
+            <button type="submit">Login</button>
+
+            <!-- Link to Sign Up -->
+            <p class="link">Don't have an account? <a href="{% url 'signup' %}">Sign Up</a></p>
+
+            <!-- Error message handling -->
+            {% if error %}
+            <div id="error-message" class="popup">{{ error }}</div>
+            {% endif %}
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Collectors Edition</p>
+    </footer>
+
+    <!-- JavaScript for Handling Fade-out Error Message -->
+    <script>
+        // Function to show popup and fade-out after 3 seconds
+        function showPopup() {
+            let popup = document.querySelector(".popup");
+            if (popup) {
+                popup.style.display = "block";  // Show the popup
+                setTimeout(() => {
+                    popup.classList.add("fade-out"); // Apply fade-out after 3 seconds
+                }, 3000); // Popup fades out after 3 seconds
+            }
+        }
+
+        // Run the function when the page content is loaded
+        document.addEventListener("DOMContentLoaded", function () {
+            showPopup(); // Trigger popup
+        });
+    </script>
+
+</body>
+</html>

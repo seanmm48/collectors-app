@@ -1,0 +1,245 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/StyleSheet.css' %}">
+    <title>{{ collection.name }} Details</title>
+    <style>
+        /* Optional: make the entire item box clickable without styling issues */
+        .item-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+            .item-link:hover .collection-item {
+                background-color: #f5f5f5;
+                transition: background-color 0.2s;
+            }
+
+        .collection-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .chart-container {
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        /* Specific styles for chart containers to maintain aspect ratio */
+        .overall-price-container {
+            width: 80%; /* Larger width for overall price chart */
+            max-width: 800px; /* Increased max width for better display */
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .price-over-time-container {
+            width: 90%; /* Wider width for price over time chart */
+            max-width: 1000px; /* Increase max width for better visualization */
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Ensure the canvas fills the container */
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+            display: block;
+        }
+    </style>
+    <!-- Chart.js script-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Luxon + adapter for time scales -->
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Collectors Edition</div>
+        <ul class="nav-links">
+            <li><a href="{% url 'userHomepage' %}">Homepage</a></li>
+            <li><a href="{% url 'logout' %}" class="logout-button">Logout</a></li>
+        </ul>
+    </nav>
+
+    <section class="collection-detail">
+        <!-- Delete button aligned to the right -->
+        <form action="{% url 'delete_collection' collection.id %}" method="post" class="delete-form">
+            {% csrf_token %}
+            <button type="submit" class="btn-delete" onclick="return confirm('Are you sure you want to delete this collection?');">
+                Delete Collection
+            </button>
+        </form>
+
+        <!-- Collection name centered -->
+        <div class="collection-header">
+            <h1>{{ collection.name }}</h1>
+            <p><strong>Theme:</strong> {{ collection.theme }}</p>
+            <p><strong>Description:</strong> {{ collection.description }}</p>
+
+            <!-- Display Item Count at the bottom -->
+            <p><strong>Items in Collection:</strong> {{ items.count }}</p> <!-- This will show the number of items -->
+        </div>
+    </section>
+    <!-- Container for the items -->
+    <div class="collection-items">
+        {% for item in items %}
+        <a href="{% url 'item_detail' collection.id item.id %}" class="item-link">
+            <div class="collection-item">
+                <div class="text-content">
+                    <h3>{{ item.name }}</h3>
+                    <p><strong>Theme:</strong> {{ item.theme }}</p>
+                    <p><strong>Description:</strong> {{ item.description }}</p>
+                    <p><strong>Purchased Price:</strong> ${{ item.purchased_price }}</p>
+                    <p><strong>Retail Price:</strong> ${{ item.retail_price }}</p>
+                    <p><strong>Date Purchased:</strong> {{ item.date_purchased }}</p>
+                </div>
+                {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.name }}" />
+                {% endif %}
+            </div>
+        </a>
+        {% empty %}
+        <p>No items in this collection yet.</p>
+        {% endfor %}
+    </div>
+
+    <div class="add-item-container">
+        <a href="{% url 'add_item' collection.id %}" class="add-item-button">Add Item</a>
+    </div>
+
+    <div class="back-home-container">
+        <a href="{% url 'userHomepage' %}" class="back-button">← Back to Homepage</a>
+    </div>
+
+    <br />
+
+    <!-- Overall Price Comparison Chart Container-->
+    <div class="chart-container overall-price-container-small">
+        <h3 class="chart-title">Overall Price Comparison (Purchased vs. Retail)</h3>
+        <canvas id="overallPriceChart"></canvas>
+    </div>
+
+    <!-- Purchase price/retail price over time chart container-->
+    <div class="chart-container price-over-time-container">
+        <h3 class="chart-title">Purchase & Retail Price Over Time</h3>
+        <canvas id="purchasePriceChart"></canvas>
+    </div>
+
+    <!-- Script to display Overall Price Comparison Chart-->
+    <script>
+        const ctx = document.getElementById('overallPriceChart').getContext('2d');
+        const overallPriceChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Purchased Price', 'Retail Price'],
+                datasets: [{
+                    label: 'Total Price Comparison',
+                    data: [{{ total_purchased_price|floatformat:2 }}, {{ total_retail_price|floatformat:2 }}],
+                    backgroundColor: ['#28a745', '#007bff'],
+                    borderColor: ['#28a745', '#007bff'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return '$' + tooltipItem.raw.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- Script to display Purchase & Retail Price Over Time Chart-->
+    <script>
+        const ctx2 = document.getElementById('purchasePriceChart').getContext('2d');
+
+        const purchasePriceChart = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: {{ purchase_dates|safe }},
+                datasets: [
+                    {
+                        label: 'Purchased Price ($)',
+                        data: {{ purchase_prices|safe }},
+                        backgroundColor: '#28a745',
+                        borderColor: '#28a745',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: false,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    },
+                    {
+                        label: 'Retail Price ($)',
+                        data: {{ retail_prices|safe }},
+                        backgroundColor: '#007bff',
+                        borderColor: '#007bff',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: false,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'month',
+                            tooltipFormat: 'yyyy-MM-dd',
+                            displayFormats: {
+                                month: 'MMM yyyy'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Purchase Date'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Price ($)'
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

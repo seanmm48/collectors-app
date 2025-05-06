@@ -1,0 +1,79 @@
+﻿{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/StyleSheet.css' %}">
+    <title>{{ item.name }} Details</title>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Collectors Edition</div>
+        <ul class="nav-links">
+            <li><a href="{% url 'userHomepage' %}">Homepage</a></li>
+            <li><a href="{% url 'logout' %}" class="logout-button">Logout</a></li>
+        </ul>
+    </nav>
+
+    <section class="item-detail">
+        <h1>{{ item.name }}</h1>
+        <p><strong>Theme:</strong> {{ item.theme }}</p>
+        <p><strong>Description:</strong> {{ item.description }}</p>
+        <p><strong>Purchased Price:</strong> ${{ item.purchased_price }}</p>
+        <p><strong>Retail Price:</strong> ${{ item.retail_price }}</p>
+        <p><strong>Date Purchased:</strong> {{ item.date_purchased }}</p>
+
+        {% if item.image %}
+        <!-- Clickable image -->
+        <img src="{{ item.image.url }}" alt="{{ item.name }}" onclick="openModal(this)">
+        {% endif %}
+
+        <div class="actions">
+            <a href="{% url 'edit_item' collection.id item.id %}">Edit Item</a>
+
+            <form action="{% url 'delete_item' collection.id item.id %}" method="post" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                {% csrf_token %}
+                <button type="submit" class="delete-button">Delete Item</button>
+            </form>
+        </div>
+
+        <br>
+        <a href="{% url 'collection_detail' collection.id %}" class="back-button">← Back to Collection</a>
+    </section>
+
+    <!-- Modal Structure -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+        function openModal(imgElement) {
+            const modal = document.getElementById("imageModal");
+            const modalImg = document.getElementById("modalImage");
+            modal.style.display = "block";
+            modalImg.src = imgElement.src;
+        }
+
+        function closeModal() {
+            document.getElementById("imageModal").style.display = "none";
+        }
+
+        // Close modal when clicking outside the image
+        window.addEventListener('click', function (event) {
+            const modal = document.getElementById("imageModal");
+            const modalImg = document.getElementById("modalImage");
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Optional: Close modal on ESC key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === "Escape") closeModal();
+        });
+    </script>
+</body>
+</html>
