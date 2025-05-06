@@ -1,0 +1,1 @@
+web: gunicorn Collectors_Edition.wsgi:application
