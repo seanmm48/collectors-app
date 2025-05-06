@@ -973,9 +973,9 @@ canvas {
     margin-top: 20px;
     text-align: center; /* Ensure the title is centered */
     font-size: 18px;
-    font-w
-
-        /* Smaller size for the donut chart container */
+    font-weight: bold;
+    /* Smaller size for the donut chart container */
+}
 .overall-price-container-small {
     width: 50%; /* Set the width to a smaller size */
     max-width: 400px; /* Adjust the max-width to keep it smaller */
