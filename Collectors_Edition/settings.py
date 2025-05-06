@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-kn-3n9gcjqm&2x78tqz+v_a@-&prpo7myu(8lpr)z_(2b=hpjm'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['collectors-app-rkjc.onrender.com', 'localhost', '127.0.0.1']
 
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'account_collections',
     'django_extensions',
     'Collectors_Edition',
+
 ]
 
 MIDDLEWARE = [
@@ -130,18 +131,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 #Look for static files in 'account_collections/static'
 #CSS, JavaScript, Images, etc..
+#STATICFILES_DIRS = [
+#    BASE_DIR / "account_collections" / "static",
+#]
 STATICFILES_DIRS = [
-    BASE_DIR / "account_collections" / "static",
+    BASE_DIR / "account_collections/static",
 ]
-
 
 #for user uploaded media content
 #defines url path used to access media files

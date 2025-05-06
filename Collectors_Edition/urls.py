@@ -21,7 +21,7 @@ urlpatterns = [
     path('collection/<int:collection_id>/item/<int:item_id>/edit/', views.edit_item, name='edit_item'),
     path('collection/<int:collection_id>/item/<int:item_id>/delete/', views.delete_item, name='delete_item'),
     path('collection/<int:collection_id>/item/<int:item_id>/', views.item_detail, name='item_detail'),
-] 
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 #allows media files to be served in development ONLY
 #production this must be switched to a file server or cloud storage (AWS S3, DigitalOcean Spaces, etc)
