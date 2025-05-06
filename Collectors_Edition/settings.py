@@ -139,7 +139,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 #Look for static files in 'account_collections/static'
 #CSS, JavaScript, Images, etc..
 STATICFILES_DIRS = [
-    BASE_DIR / "account_collections/static",
+    BASE_DIR / "account_collections" / "static",
 ]
 
 
