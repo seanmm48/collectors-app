@@ -59,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 
 ]
 
@@ -143,9 +144,12 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 #STATICFILES_DIRS = [
 #    BASE_DIR / "account_collections" / "static",
 #]
+
 STATICFILES_DIRS = [
-    BASE_DIR / "account_collections/static",
+    BASE_DIR / 'static',
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 #for user uploaded media content
 #defines url path used to access media files
