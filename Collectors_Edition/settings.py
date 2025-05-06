@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-kn-3n9gcjqm&2x78tqz+v_a@-&prpo7myu(8lpr)z_(2b=hpjm
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['collectors-app-rkjc.onrender.com', 'localhost', '127.0.0.1']
 
 #redirecting to login page if user attempts to get to homepage without loggin in
 LOGIN_URL = '/login/'
